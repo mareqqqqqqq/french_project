@@ -67,7 +67,7 @@
         'frontend/src/features/step-fill.jsx',
         'frontend/src/features/step-result.jsx',
         'frontend/src/features/auth-modal.jsx',
-        'frontend/src/app.jsx', // Главный файл всегда последний!
+        'frontend/src/app.jsx',
       ];
       try {
         for (const f of files) {
@@ -76,7 +76,7 @@
           if (f.endsWith('.jsx')) {
             code = Babel.transform(code, { presets: ['react'], filename: f }).code;
           }
-          // Use a script tag so errors surface with the right filename
+
           const s = document.createElement('script');
           s.textContent = code + `\n//# sourceURL=${f}`;
           document.body.appendChild(s);

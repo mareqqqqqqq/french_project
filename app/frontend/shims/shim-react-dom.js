@@ -1,4 +1,3 @@
-// react-dom shim
 const RD = window.ReactDOM;
 export default RD;
 export const render = RD.render;

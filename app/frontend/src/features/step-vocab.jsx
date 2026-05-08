@@ -1,4 +1,3 @@
-// Step 0 — Vocabulary cards
 function StepVocab({ vocab, onComplete }) {
   const [flipped, setFlipped] = React.useState({});
   const seen = Object.keys(flipped).length;

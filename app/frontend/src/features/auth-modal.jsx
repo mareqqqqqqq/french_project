@@ -1,8 +1,6 @@
-// Auth modal — glassmorphism
 function AuthModal({ open, onClose }) {
   const [tab, setTab] = React.useState("login");
 
-  // Состояния для сбора данных
   const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -78,7 +76,7 @@ function AuthModal({ open, onClose }) {
 
           {/* card */}
           <motion.div
-            layout // <--- ЭТО ЗАСТАВЛЯЕТ КАРТОЧКУ РАСТИ
+            layout //
             key="card"
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

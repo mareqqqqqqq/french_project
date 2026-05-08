@@ -1,4 +1,3 @@
-// Main app
 function App() {
   const [active, setActive] = React.useState("lessons");
   const [step, setStep] = React.useState(0); // 0 vocab, 1 match, 2 fill, 3 result
@@ -6,8 +5,7 @@ function App() {
   const [score, setScore] = React.useState(120);
   const [streak] = React.useState(5);
 
-  // collect answers across steps for end-of-lesson result
-  const [answers, setAnswers] = React.useState([]); // booleans
+  const [answers, setAnswers] = React.useState([]);
   const recordAnswer = (correct) => setAnswers((a) => [...a, !!correct]);
 
   const totalSteps = 4; // includes result

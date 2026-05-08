@@ -1,4 +1,3 @@
-// Step 2 — Sentence completion
 function StepFill({ sentences, onComplete, recordAnswer }) {
   const [picks, setPicks] = React.useState({}); // index -> option
   const allDone = sentences.every((_, i) => picks[i]);

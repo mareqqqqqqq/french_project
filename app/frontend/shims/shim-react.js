@@ -1,4 +1,3 @@
-// React shim — re-export window.React as ESM
 const R = window.React;
 export default R;
 export const useState = R.useState;

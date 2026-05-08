@@ -1,4 +1,3 @@
-// Result page
 function StepResult({ correct, total, xp, onRestart }) {
   const pct = Math.round((correct / total) * 100);
   const grade = pct >= 90 ? "Excellent!" : pct >= 70 ? "Très bien!" : pct >= 50 ? "Pas mal!" : "Continue!";

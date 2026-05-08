@@ -1,4 +1,3 @@
-// jsx-runtime shim
 const R = window.React;
 export function jsx(type, props, key) {
   const { children, ...rest } = props || {};

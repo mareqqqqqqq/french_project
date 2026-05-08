@@ -1,11 +1,9 @@
-// Step 1 — Matching exercise (FR ↔ RU)
 function StepMatch({ pairs, onComplete, recordAnswer }) {
   const [selected, setSelected] = React.useState({ side: null, value: null });
   const [matches, setMatches] = React.useState({}); // fr -> ru
   const [wrongFlash, setWrongFlash] = React.useState(null);
   const [attempts, setAttempts] = React.useState(0);
 
-  // shuffle once
   const ruOrder = React.useMemo(
     () => [...pairs].sort(() => Math.random() - 0.5).map((p) => p.ru),
     [pairs]
@@ -28,7 +26,6 @@ function StepMatch({ pairs, onComplete, recordAnswer }) {
       setSelected({ side, value });
       return;
     }
-    // attempt match
     const fr = side === "fr" ? value : selected.value;
     const ru = side === "ru" ? value : selected.value;
     const isPair = pairs.find((p) => p.fr === fr && p.ru === ru);

@@ -1,4 +1,3 @@
-// Lesson data — Météo & Lieux
 window.LESSON_DATA = {
   title: "Météo & Lieux",
   subtitle: "Leçon 3 · Niveau A1",
@@ -12,7 +11,7 @@ window.LESSON_DATA = {
     { fr: "Le brouillard", ru: "Туман", icon: "CloudFog",  hint: "Il y a du brouillard" },
     { fr: "La chaleur",  ru: "Жара",    icon: "Thermometer", hint: "Il fait chaud" },
   ],
-  // Matching pairs (subset)
+
   match: [
     { fr: "Le soleil",  ru: "Солнце" },
     { fr: "La pluie",   ru: "Дождь" },
@@ -20,7 +19,7 @@ window.LESSON_DATA = {
     { fr: "La neige",   ru: "Снег" },
     { fr: "Le vent",    ru: "Ветер" },
   ],
-  // Sentence completion
+
   sentences: [
     {
       prompt: "Aujourd'hui à Paris, ___ brille dans le ciel.",
