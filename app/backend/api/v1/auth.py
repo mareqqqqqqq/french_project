@@ -14,6 +14,15 @@ router = APIRouter()
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email == user.email))
+    db_user = result.scalars().first()
+
+    if db_user:
+        raise HTTPException(
+            status_code=409,
+            detail="Пользователь с такой почтой уже существует"
+        )
+
     new_user = User(
         username = user.username,
         email =  user.email,
@@ -49,4 +58,4 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
             detail="Неверный пароль"
         )
 
-    return {"message": "Успешный вход", "username": db_user.username}
+    return {"message": "Успешный вход"}
