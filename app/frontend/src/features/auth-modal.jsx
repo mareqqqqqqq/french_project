@@ -7,7 +7,7 @@ function AuthModal({ open, onClose }) {
 
   const { X, Mail, Lock, User, ArrowRight } = window.LucideIcons;
 
-  const API_URL = "http://127.0.0.1:8000";
+  const API_BASE = "http://127.0.0.1:8000";
 
    // асинронная функция async
   const handleSubmit = async () => {
@@ -21,13 +21,12 @@ function AuthModal({ open, onClose }) {
     const endpoint = tab === "login" ? "/login" : "/register";
 
     // добавил
-    if (tab === "signup") {
+    if (tab !== "login") {
         userData.username = username
     }
 
-
     try {
-        const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, { // await - говорит браузеру отправить http запрос и сидеть ждать, при этом НЕ блокируя выполнение других скриптов не странице
+        const response = await fetch(`${API_BASE}/api/v1/auth${endpoint}`, { // await - говорит браузеру отправить http запрос и сидеть ждать, при этом НЕ блокируя выполнение других скриптов не странице
             // fetch - так же даёт свойтсва ok и status и так далее это всё прописано в движке браузера
             method: "POST", // метод пост в rest api передача данных с целью их сохранения
             headers: {
