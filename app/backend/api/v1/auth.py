@@ -1,12 +1,11 @@
-from http.client import HTTPException
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.schemas.user import UserCreate, UserLogin
 from app.backend.db import get_db
 from app.backend.models.user import User
-from app.backend.core.security import get_password_hash, verify_password_hash
 from sqlalchemy import select
 from fastapi import HTTPException
+from app.backend.core.security import get_password_hash, verify_password_hash, create_access_token, create_refresh_token
 
 
 # просто коллектор,
@@ -58,4 +57,15 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
             detail="Неверный пароль"
         )
 
-    return {"message": "Успешный вход"}
+    # subject
+    access_token = create_access_token({"sub": str(db_user.id)})
+    refresh_token = create_refresh_token({"sub": str(db_user.id)})
+
+    db_user.refresh_token = refresh_token
+    await db.commit()
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }

@@ -2,12 +2,10 @@ from passlib.context import CryptContext
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-from app.backend.db import Settings
-import os
-
+from app.backend.db import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHMS = ["HS256"]
 
 def get_password_hash(password: str):

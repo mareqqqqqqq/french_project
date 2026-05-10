@@ -8,6 +8,8 @@ function AuthModal({ open, onClose }) {
   const { X, Mail, Lock, User, ArrowRight } = window.LucideIcons;
 
   const API_URL = "http://127.0.0.1:8000";
+  const [error, setError] = React.useState(null)
+  const [success, setSuccess] = React.useState(null)
 
    // асинронная функция async
   const handleSubmit = async () => {
@@ -21,10 +23,9 @@ function AuthModal({ open, onClose }) {
     const endpoint = tab === "login" ? "/login" : "/register";
 
     // добавил
-    if (tab === "signup") {
+    if (tab !== "login") {
         userData.username = username
     }
-
 
     try {
         const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, { // await - говорит браузеру отправить http запрос и сидеть ждать, при этом НЕ блокируя выполнение других скриптов не странице
@@ -36,13 +37,14 @@ function AuthModal({ open, onClose }) {
             body: JSON.stringify(userData),  // переведёт в строку что получили из формы в json формате
         });
 
-
         // получает от сервера пакет данных
         const data = await response.json();
 
         // а вот тут проверка на то что с состоянием всё норм
         if (response.ok) {
-            alert("Успех:" + (data.message || "Вы вошли!"));
+            localStorage.setItem("refresh_token", data.refresh_token);
+            localStorage.setItem("access_token", data.access_token);
+            setSuccess("Вы успешно вошли!");
             onClose();
         }
 
@@ -53,12 +55,12 @@ function AuthModal({ open, onClose }) {
                 message = data.detail[0].msg;
             }
 
-            alert("Ошибка: " + message);
+            setError(message);
         }
 
     } catch (error) {
         console.error("Ошибка сети:", error);
-        alert("Не удалось связаться с сервером");
+        setError("Не удалось связаться с сервером");
     }
     };
 
@@ -131,6 +133,18 @@ function AuthModal({ open, onClose }) {
                 <Field icon={<Mail size={15} />} placeholder="Email" type="email" value={email} onChange={setEmail} />
                 <Field icon={<Lock size={15} />} placeholder="Пароль" type="password" value={password} onChange={setPassword} />
               </motion.div>
+
+              {error && (
+                <div style={{ color: "red", marginTop: "8px" }}>
+                    ❌ {error}
+                </div>
+              )}
+
+              {success && (
+                <div style={{ color: "green", marginTop: "8px" }}>
+                    ✅ {success}
+                </div>
+              )}
 
               <button
                 onClick={handleSubmit}
