@@ -1,18 +1,17 @@
-// Sidebar component
+// Боковая панель навигации
 const { motion } = window;
 
-function Sidebar({ active, setActive, score, streak }) {
-  const Icon = window.lucide ? null : null;
+function Sidebar({ active, setActive, score, streak, username }) {
   const items = [
-    { id: "progress", label: "Mon Progrès", icon: "TrendingUp" },
-    { id: "lessons",  label: "Leçons",      icon: "BookOpen" },
-    { id: "dict",     label: "Dictionnaire", icon: "Library" },
-    { id: "settings", label: "Paramètres",  icon: "Settings" },
+    { id: "progress", label: "Мой прогресс", icon: "TrendingUp" },
+    { id: "lessons",  label: "Уроки",        icon: "BookOpen" },
+    { id: "dict",     label: "Словарь",      icon: "Library" },
+    { id: "settings", label: "Настройки",    icon: "Settings" },
   ];
 
   return (
     <aside className="w-[260px] shrink-0 h-screen sticky top-0 bg-white/70 backdrop-blur-xl border-r border-slate-200/70 flex flex-col">
-      {/* Brand */}
+      {/* Логотип / приветствие */}
       <div className="px-6 pt-7 pb-6">
         <div className="flex items-center gap-3">
           <div className="relative w-11 h-11 rounded-2xl bg-[#0055A4] grid place-items-center shadow-[0_8px_20px_-8px_rgba(0,85,164,0.55)]">
@@ -20,13 +19,15 @@ function Sidebar({ active, setActive, score, streak }) {
             <span className="absolute -right-1 -bottom-1 w-4 h-4 rounded-full bg-[#EF4135] ring-2 ring-white"></span>
           </div>
           <div>
-            <div className="text-[15px] font-semibold text-slate-900 leading-tight">Bonjour</div>
-            <div className="text-xs text-slate-500">Apprends le français</div>
+            <div className="text-[15px] font-semibold text-slate-900 leading-tight">
+              Привет, {username || "гость"}!
+            </div>
+            <div className="text-xs text-slate-500">Учи французский</div>
           </div>
         </div>
       </div>
 
-      {/* Nav */}
+      {/* Навигация */}
       <nav className="px-3 flex-1">
         {items.map((it) => {
           const LucideIcon = window.LucideIcons[it.icon];
@@ -54,16 +55,16 @@ function Sidebar({ active, setActive, score, streak }) {
         })}
       </nav>
 
-      {/* Streak card */}
+      {/* Карточка серии */}
       <div className="p-4">
         <div className="rounded-2xl bg-gradient-to-br from-[#0055A4] to-[#1a6fc1] p-4 text-white relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
           <div className="absolute right-3 bottom-3 w-3 h-3 rounded-full bg-[#EF4135]"></div>
           <div className="flex items-center gap-2 text-xs font-medium opacity-90">
             <window.LucideIcons.Flame size={14} />
-            Série quotidienne
+            Ежедневная серия
           </div>
-          <div className="mt-1 text-2xl font-bold tracking-tight">{streak} jours</div>
+          <div className="mt-1 text-2xl font-bold tracking-tight">{streak} дн.</div>
           <div className="mt-3 flex gap-1">
             {Array.from({ length: 7 }).map((_, i) => (
               <div

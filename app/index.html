@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Météo & Lieux — Apprends le français</title>
+  <title>Météo & Lieux — Учи французский</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -42,7 +42,7 @@
 </head>
 <body class="font-sans">
   <div id="root">
-    <div style="display:grid;place-items:center;height:100vh;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">Chargement…</div>
+    <div style="display:grid;place-items:center;height:100vh;color:#94a3b8;font-family:Inter,sans-serif;font-size:13px;">Загрузка…</div>
   </div>
 
   <script type="module">
@@ -85,7 +85,7 @@
         console.error('App load error:', err);
         document.getElementById('root').innerHTML =
           '<div style="padding:40px;color:#b91c1c;font-family:monospace;">' +
-          'Erreur de chargement: ' + (err && err.message ? err.message : err) + '</div>';
+          'Ошибка загрузки: ' + (err && err.message ? err.message : err) + '</div>';
       }
     }
     window.addEventListener('libsReady', loadAppScripts);

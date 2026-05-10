@@ -1,6 +1,6 @@
 function StepResult({ correct, total, xp, onRestart }) {
   const pct = Math.round((correct / total) * 100);
-  const grade = pct >= 90 ? "Excellent!" : pct >= 70 ? "Très bien!" : pct >= 50 ? "Pas mal!" : "Continue!";
+  const grade = pct >= 90 ? "Отлично!" : pct >= 70 ? "Хорошо!" : pct >= 50 ? "Неплохо!" : "Продолжай!";
   const { Trophy, Star, Repeat, ChevronRight, Sparkles } = window.LucideIcons;
 
   return (
@@ -9,9 +9,8 @@ function StepResult({ correct, total, xp, onRestart }) {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-[680px] mx-auto"
     >
-      {/* Hero */}
+      {/* Герой */}
       <div className="relative rounded-[36px] bg-gradient-to-br from-[#0055A4] via-[#1860b1] to-[#2a73c2] text-white p-10 overflow-hidden shadow-[0_30px_60px_-30px_rgba(0,85,164,0.6)]">
-        {/* decorative dots */}
         <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10"></div>
         <div className="absolute right-16 bottom-6 w-20 h-20 rounded-full bg-white/5"></div>
         <div className="absolute right-6 top-6 w-3 h-3 rounded-full bg-[#EF4135]"></div>
@@ -19,27 +18,27 @@ function StepResult({ correct, total, xp, onRestart }) {
         <div className="relative">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-[11px] font-semibold uppercase tracking-wider">
             <Sparkles size={12} />
-            Leçon terminée
+            Урок завершён
           </div>
           <h2 className="mt-4 text-[40px] font-bold tracking-tight leading-none">{grade}</h2>
           <p className="mt-2 text-white/80 text-[15px]">
-            Tu as terminé <span className="font-semibold">Météo & Lieux</span>.
+            Ты прошёл урок <span className="font-semibold">Météo & Lieux</span>.
           </p>
 
           <div className="mt-7 grid grid-cols-3 gap-3">
-            <Stat icon={<Trophy size={16} />} label="Précision" value={`${pct}%`} />
-            <Stat icon={<Star size={16} />} label="XP gagnés" value={`+${xp}`} />
-            <Stat icon={<window.LucideIcons.Target size={16} />} label="Réponses" value={`${correct}/${total}`} />
+            <Stat icon={<Trophy size={16} />} label="Точность" value={`${pct}%`} />
+            <Stat icon={<Star size={16} />} label="Получено XP" value={`+${xp}`} />
+            <Stat icon={<window.LucideIcons.Target size={16} />} label="Ответы" value={`${correct}/${total}`} />
           </div>
         </div>
       </div>
 
-      {/* Breakdown */}
+      {/* Разбивка по шагам */}
       <div className="mt-6 rounded-3xl bg-white border border-slate-200/80 p-6">
-        <div className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-4">Ta performance</div>
-        <Bar label="Vocabulaire"        value={100} color="#0055A4" />
-        <Bar label="Association"        value={pct} color="#0055A4" />
-        <Bar label="Phrases à compléter" value={pct} color="#EF4135" />
+        <div className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-4">Твои результаты</div>
+        <Bar label="Словарный запас"  value={100} color="#0055A4" />
+        <Bar label="Сопоставление"    value={pct} color="#0055A4" />
+        <Bar label="Фразы"            value={pct} color="#EF4135" />
       </div>
 
       <div className="mt-6 flex gap-3">
@@ -48,12 +47,12 @@ function StepResult({ correct, total, xp, onRestart }) {
           className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 font-semibold hover:border-slate-300 transition"
         >
           <Repeat size={16} />
-          Recommencer
+          Начать заново
         </button>
         <button
           className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#0055A4] text-white font-semibold hover:bg-[#004a8f] transition shadow-[0_18px_30px_-16px_rgba(0,85,164,0.7)]"
         >
-          Leçon suivante
+          Следующий урок
           <ChevronRight size={17} />
         </button>
       </div>

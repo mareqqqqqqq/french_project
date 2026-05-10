@@ -5,9 +5,9 @@ function StepVocab({ vocab, onComplete }) {
   return (
     <div>
       <StepHeader
-        eyebrow="Étape 1 sur 3"
-        title="Vocabulaire"
-        subtitle="Touche chaque carte pour découvrir la traduction. Tape sur toutes les cartes pour continuer."
+        eyebrow="Шаг 1 из 3"
+        title="Словарный запас"
+        subtitle="Нажми на каждую карточку, чтобы увидеть перевод. Открой все карточки, чтобы продолжить."
       />
 
       <div className="grid grid-cols-4 gap-4 mt-8">
@@ -25,12 +25,12 @@ function StepVocab({ vocab, onComplete }) {
       <div className="mt-10 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px] text-slate-500">
           <window.LucideIcons.Eye size={15} />
-          {seen} / {vocab.length} cartes découvertes
+          {seen} / {vocab.length} карточек открыто
         </div>
         <NextButton
           disabled={seen < vocab.length}
           onClick={onComplete}
-          label={seen < vocab.length ? `Découvre ${vocab.length - seen} cartes` : "Suivant"}
+          label={seen < vocab.length ? `Открой ещё ${vocab.length - seen}` : "Далее"}
         />
       </div>
     </div>
@@ -49,10 +49,10 @@ function VocabCard({ word, index, flipped, onFlip }) {
       onClick={onFlip}
       className="group relative aspect-[4/5] rounded-3xl bg-white border border-slate-200/80 text-left p-5 flex flex-col justify-between overflow-hidden shadow-[0_2px_0_rgba(15,23,42,0.04),0_18px_30px_-22px_rgba(15,23,42,0.25)] hover:shadow-[0_2px_0_rgba(15,23,42,0.04),0_28px_40px_-22px_rgba(0,85,164,0.35)] transition-shadow"
     >
-      {/* corner accent */}
+      {/* угловой акцент */}
       <div className={`absolute top-0 right-0 w-20 h-20 rounded-bl-[80px] transition-colors ${flipped ? "bg-[#0055A4]/8" : "bg-slate-50"}`}></div>
 
-      {/* Icon disc */}
+      {/* Иконка */}
       <div className={`relative w-12 h-12 rounded-2xl grid place-items-center transition-all ${
         flipped ? "bg-[#0055A4] text-white" : "bg-slate-100 text-[#0055A4]"
       }`}>
@@ -77,13 +77,13 @@ function VocabCard({ word, index, flipped, onFlip }) {
           ) : (
             <div className="flex items-center gap-1.5 text-[12px] text-slate-400">
               <window.LucideIcons.MousePointerClick size={13} />
-              Touche pour révéler
+              Нажми, чтобы открыть
             </div>
           )}
         </div>
       </div>
 
-      {/* Pronunciation chip */}
+      {/* Кнопка произношения */}
       <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-slate-50 grid place-items-center text-slate-400 group-hover:bg-[#0055A4] group-hover:text-white transition">
         <window.LucideIcons.Volume2 size={14} />
       </div>

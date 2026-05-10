@@ -46,9 +46,9 @@ function StepMatch({ pairs, onComplete, recordAnswer }) {
   return (
     <div>
       <StepHeader
-        eyebrow="Étape 2 sur 3"
-        title="Association"
-        subtitle="Relie chaque mot français à sa traduction russe."
+        eyebrow="Шаг 2 из 3"
+        title="Сопоставление"
+        subtitle="Соедини каждое французское слово с его русским переводом."
       />
 
       <div className="grid grid-cols-2 gap-6 mt-8">
@@ -82,10 +82,10 @@ function StepMatch({ pairs, onComplete, recordAnswer }) {
           </span>
           <span className="flex items-center gap-2">
             <window.LucideIcons.Repeat size={15} />
-            {attempts} essais
+            {attempts} попыток
           </span>
         </div>
-        <NextButton disabled={!done} onClick={onComplete} label={done ? "Suivant" : "Termine les paires"} />
+        <NextButton disabled={!done} onClick={onComplete} label={done ? "Далее" : "Заверши все пары"} />
       </div>
     </div>
   );

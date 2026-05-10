@@ -44,6 +44,7 @@ function AuthModal({ open, onClose }) {
         if (response.ok) {
             localStorage.setItem("refresh_token", data.refresh_token);
             localStorage.setItem("access_token", data.access_token);
+            localStorage.setItem("username", data.username);
             setSuccess("Вы успешно вошли!");
             onClose();
         }

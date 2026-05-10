@@ -16,9 +16,9 @@ function StepFill({ sentences, onComplete, recordAnswer }) {
   return (
     <div>
       <StepHeader
-        eyebrow="Étape 3 sur 3"
-        title="Complète la phrase"
-        subtitle="Choisis le bon mot pour compléter chaque phrase. Les résultats apparaissent à la fin."
+        eyebrow="Шаг 3 из 3"
+        title="Заполни пропуск"
+        subtitle="Выбери правильное слово для каждой фразы. Результаты появятся в конце."
       />
 
       <div className="mt-8 space-y-5">
@@ -30,9 +30,9 @@ function StepFill({ sentences, onComplete, recordAnswer }) {
       <div className="mt-10 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px] text-slate-500">
           <window.LucideIcons.PencilLine size={15} />
-          {Object.keys(picks).length} / {sentences.length} complétées
+          {Object.keys(picks).length} / {sentences.length} выполнено
         </div>
-        <NextButton disabled={!allDone} onClick={finish} label={allDone ? "Voir le résultat" : "Réponds à toutes les phrases"} />
+        <NextButton disabled={!allDone} onClick={finish} label={allDone ? "Смотреть результат" : "Ответь на все фразы"} />
       </div>
     </div>
   );

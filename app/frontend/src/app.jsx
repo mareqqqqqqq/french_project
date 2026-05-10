@@ -4,12 +4,19 @@ function App() {
   const [authOpen, setAuthOpen] = React.useState(false);
   const [score, setScore] = React.useState(120);
   const [streak] = React.useState(5);
+  const [username, setUsername] = React.useState(localStorage.getItem("username") || "");
 
   const [answers, setAnswers] = React.useState([]);
   const recordAnswer = (correct) => setAnswers((a) => [...a, !!correct]);
 
   const totalSteps = 4; // includes result
   const data = window.LESSON_DATA;
+
+  React.useEffect(() => {
+    if (!authOpen) {
+      setUsername(localStorage.getItem("username") || "");
+    }
+  }, [authOpen]);
 
   function next() {
     setStep((s) => Math.min(s + 1, 3));
@@ -31,7 +38,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex bg-[#F4F7FB] text-slate-900 antialiased">
-      <window.Sidebar active={active} setActive={setActive} score={score} streak={streak} />
+      <window.Sidebar active={active} setActive={setActive} score={score} streak={streak} username={username} />
 
       <div className="flex-1 min-w-0 flex flex-col">
         <window.Header
@@ -39,14 +46,15 @@ function App() {
           step={step}
           totalSteps={totalSteps - 1}
           onAuthClick={() => setAuthOpen(true)}
+          username={username}
         />
 
-        {/* Lesson breadcrumb / chapters */}
+        {/* Breadcrumb шагов */}
         <div className="px-10 pt-8">
           <Chapters step={step} />
         </div>
 
-        {/* Main panel */}
+        {/* Основная панель */}
         <main className="px-10 pb-16 pt-6 flex-1">
           <div className="relative max-w-[1080px] mx-auto">
             <window.AnimatePresence mode="wait">
@@ -85,10 +93,10 @@ function App() {
 
 function Chapters({ step }) {
   const items = [
-    { label: "Vocabulaire",   icon: "BookOpen" },
-    { label: "Association",   icon: "Link2" },
-    { label: "Phrases",       icon: "PencilLine" },
-    { label: "Résultat",      icon: "Trophy" },
+    { label: "Словарный запас", icon: "BookOpen" },
+    { label: "Сопоставление",   icon: "Link2" },
+    { label: "Фразы",           icon: "PencilLine" },
+    { label: "Результат",       icon: "Trophy" },
   ];
   return (
     <div className="max-w-[1080px] mx-auto flex items-center gap-2">
