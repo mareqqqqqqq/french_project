@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 print(f"ищу вот тут: {env_path}")
 settings = Settings()
 
-DATABASE_URL = f"mysql+aiomysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+DATABASE_URL = f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 # настроили движок для настроек бд, чтобы каждый раз не писать лишний код, это называется диспетчер соединений
 engine = create_async_engine(DATABASE_URL, echo = True) # знает куда подключаться, какой класс использовать, echo позволяет, выводить sql запросы в консоль
@@ -45,10 +45,6 @@ async def get_db(): # когда отправляется запрос, напр
     async with AsyncSessionLocal() as session: # создаёт обьект сессии и открывает соединение с mysql
         yield session # отдаёт открытую сессию в функцию регистрации, и работаем с базой
 
-
-
-
-#TODO разобраться с синхронным и асинхронными потоками, как во flast и fastapi
 
 
 

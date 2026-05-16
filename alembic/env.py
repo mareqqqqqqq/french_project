@@ -19,7 +19,7 @@ from app.backend.models.user import User
 config = context.config
 
 # Подставляем URL из .env (используем sync драйвер pymysql)
-sync_url = f"mysql+pymysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+sync_url = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.

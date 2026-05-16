@@ -11,58 +11,57 @@ function AuthModal({ open, onClose }) {
   const [error, setError] = React.useState(null)
   const [success, setSuccess] = React.useState(null)
 
-   // асинронная функция async
-  const handleSubmit = async () => {
-      // бeрeт значения из переменных - listener ов и закидывает их в словарь
-    const userData = {
-        email: email,
-        password: password
-    };
+// асинронная функция async
+    const handleSubmit = async () => {
+        const userData = {
+            email: email,
+            password: password
+        };
 
-    // выбор endpoint-а ссылки в зависимоти от того на какой части модалки мы сотановились регистер или логин
-    const endpoint = tab === "login" ? "/login" : "/register";
+        const endpoint = tab === "login" ? "/login" : "/register";
 
-    // добавил
-    if (tab !== "login") {
-        userData.username = username
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, { // await - говорит браузеру отправить http запрос и сидеть ждать, при этом НЕ блокируя выполнение других скриптов не странице
-            // fetch - так же даёт свойтсва ok и status и так далее это всё прописано в движке браузера
-            method: "POST", // метод пост в rest api передача данных с целью их сохранения
-            headers: {
-                "Content-Type": "application/json", // говорим что за тип данных придёт на бэк(json)
-            },
-            body: JSON.stringify(userData),  // переведёт в строку что получили из формы в json формате
-        });
-
-        // получает от сервера пакет данных
-        const data = await response.json();
-
-        // а вот тут проверка на то что с состоянием всё норм
-        if (response.ok) {
-            localStorage.setItem("refresh_token", data.refresh_token);
-            localStorage.setItem("access_token", data.access_token);
-            localStorage.setItem("username", data.username);
-            setSuccess("Вы успешно вошли!");
-            onClose();
+        if (tab !== "login") {
+            userData.username = username;
         }
 
-        else {
-            let message = data.detail;
+        try {
+            const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+            });
 
-            if (Array.isArray(data.detail)) {
-                message = data.detail[0].msg;
+            const data = await response.json();
+
+            if (response.ok) {
+                if (tab === "login") {
+                    // только при логине сохраняем токены и закрываем модалку
+                    localStorage.setItem("refresh_token", data.refresh_token);
+                    localStorage.setItem("access_token", data.access_token);
+                    localStorage.setItem("username", data.username);
+                    setSuccess("Вы успешно вошли!");
+                    onClose();
+                } else {
+                    // при регистрации показываем сообщение и переключаем на вкладку входа
+                    setSuccess("Аккаунт создан! Теперь войдите.");
+                    setTab("login");
+                }
+            } else {
+                let message = data.detail;
+
+                if (Array.isArray(data.detail)) {
+                    message = data.detail[0].msg;
+                }
+
+                setError(message);
             }
 
-            setError(message);
+        } catch (error) {
+            console.error("Ошибка сети:", error);
+            setError("Не удалось связаться с сервером");
         }
-
-    } catch (error) {
-        console.error("Ошибка сети:", error);
-        setError("Не удалось связаться с сервером");
-    }
     };
 
   return (

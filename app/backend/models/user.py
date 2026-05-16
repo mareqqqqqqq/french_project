@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.sql import func
 from app.backend.db import Base
 
@@ -11,5 +11,6 @@ class User(Base):
     username = Column(String(15), unique=True)
     email = Column(String(150), unique=True, index=True)
     hashed_password = Column(String(255))
+    is_admin = Column(Boolean, default=False)
     refresh_token = Column(String(500), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
