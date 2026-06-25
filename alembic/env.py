@@ -13,6 +13,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.backend.db import Base, settings
 from app.backend.models.user import User
+from app.backend.models.lesson import Lesson, UserProgress, VocabularyCard, FillBlankExercises
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

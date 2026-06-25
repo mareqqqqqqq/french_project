@@ -49,40 +49,46 @@ function App() {
           username={username}
         />
 
-        {/* Breadcrumb шагов */}
-        <div className="px-10 pt-8">
-          <Chapters step={step} />
-        </div>
+        {/* Breadcrumb шагов — скрыт в режиме учителя */}
+        {active !== "teacher" && (
+          <div className="px-10 pt-8">
+            <Chapters step={step} />
+          </div>
+        )}
 
         {/* Основная панель */}
         <main className="px-10 pb-16 pt-6 flex-1">
-          <div className="relative max-w-[1080px] mx-auto">
-            <window.AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={transition}
-              >
-                {step === 0 && <window.StepVocab vocab={data.vocab} onComplete={next} />}
-                {step === 1 && (
-                  <window.StepMatch pairs={data.match} onComplete={next} recordAnswer={recordAnswer} />
-                )}
-                {step === 2 && (
-                  <window.StepFill sentences={data.sentences} onComplete={next} recordAnswer={recordAnswer} />
-                )}
-                {step === 3 && (
-                  <window.StepResult
-                    correct={correct}
-                    total={total}
-                    xp={correct * 10 + 30}
-                    onRestart={restart}
-                  />
-                )}
-              </motion.div>
-            </window.AnimatePresence>
-          </div>
+          {active === "teacher" ? (
+            <window.TeacherDashboard />
+          ) : (
+            <div className="relative max-w-[1080px] mx-auto">
+              <window.AnimatePresence mode="wait">
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={transition}
+                >
+                  {step === 0 && <window.StepVocab vocab={data.vocab} onComplete={next} />}
+                  {step === 1 && (
+                    <window.StepMatch pairs={data.match} onComplete={next} recordAnswer={recordAnswer} />
+                  )}
+                  {step === 2 && (
+                    <window.StepFill sentences={data.sentences} onComplete={next} recordAnswer={recordAnswer} />
+                  )}
+                  {step === 3 && (
+                    <window.StepResult
+                      correct={correct}
+                      total={total}
+                      xp={correct * 10 + 30}
+                      onRestart={restart}
+                    />
+                  )}
+                </motion.div>
+              </window.AnimatePresence>
+            </div>
+          )}
         </main>
       </div>
 

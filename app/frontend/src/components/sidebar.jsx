@@ -3,10 +3,11 @@ const { motion } = window;
 
 function Sidebar({ active, setActive, score, streak, username }) {
   const items = [
-    { id: "progress", label: "Мой прогресс", icon: "TrendingUp" },
-    { id: "lessons",  label: "Уроки",        icon: "BookOpen" },
-    { id: "dict",     label: "Словарь",      icon: "Library" },
-    { id: "settings", label: "Настройки",    icon: "Settings" },
+    { id: "progress", label: "Мой прогресс",     icon: "TrendingUp" },
+    { id: "lessons",  label: "Уроки",            icon: "BookOpen" },
+    { id: "dict",     label: "Словарь",          icon: "Library" },
+    { id: "settings", label: "Настройки",        icon: "Settings" },
+    { id: "teacher",  label: "Кабинет учителя",  icon: "GraduationCap" },
   ];
 
   return (
