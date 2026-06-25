@@ -1,12 +1,14 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-from app.backend.db import settings
+from app.backend.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHMS = ["HS256"]
+
 
 def get_password_hash(password: str):
     salt = bcrypt.gensalt()
@@ -15,10 +17,8 @@ def get_password_hash(password: str):
 
 
 def verify_password_hash(password: str, hashed_password: str):
-    return bcrypt.checkpw(
-        password.encode("utf-8"),
-        hashed_password.encode("utf-8")
-    )
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -30,9 +30,20 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHMS[0])
     return encoded_jwt
 
+
 def create_refresh_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(days=7)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHMS[0])
     return encoded_jwt
+
+
+def decode_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHMS)
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Токен истёк")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Невалидный токен")

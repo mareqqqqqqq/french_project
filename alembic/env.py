@@ -13,13 +13,14 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.backend.db import Base, settings
 from app.backend.models.user import User
+from app.backend.models.lesson import Lesson, UserProgress, VocabularyCard, FillBlankExercises
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # Подставляем URL из .env (используем sync драйвер pymysql)
-sync_url = f"mysql+pymysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+sync_url = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.
