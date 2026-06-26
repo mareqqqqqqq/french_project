@@ -3,7 +3,7 @@ import os
 
 base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 env_path = os.path.join(base_dir, ".env")
-print(f'{env_path}, ищу вот тут')
+print(f"{env_path}, ищу вот тут")
 
 
 class Settings(BaseSettings):

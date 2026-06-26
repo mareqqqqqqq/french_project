@@ -19,6 +19,7 @@ from app.backend.core.config import settings
 # просто коллектор,
 router = APIRouter()
 
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 @limiter.limit(settings.RATE_LIMIT_REGISTER)
 async def register(

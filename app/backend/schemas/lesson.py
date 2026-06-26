@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 
+
 class LessonSchema(BaseModel):
     id: int
     title: str = Field(min_length=3, max_length=100)
@@ -10,8 +11,9 @@ class LessonSchema(BaseModel):
     class Config:
         from_attributes = True
 
+
 class CreateLessonSchema(BaseModel):
     title: str = Field(min_length=3, max_length=100)
 
-
-
+class DeleteLessonSchema(BaseModel):
+    id: int
