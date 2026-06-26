@@ -7,13 +7,9 @@ from app.backend.db import Base
 
 class Lesson(Base):
     __tablename__ = "lesson"
-    id = Column(
-        Integer, primary_key=True
-    )  # уникальный id primary key его генерит сама бд
+    id = Column(Integer, primary_key=True)  # уникальный id primary key его генерит сама бд
     title = Column(String(200), nullable=False)
-    teacher_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False
-    )  # ForeignKey ссылка на строку в другой таблице
+    teacher_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ForeignKey ссылка на строку в другой таблице
     created_at = Column(DateTime, server_default=func.now())
 
     vocabulary_cards = relationship("VocabularyCard", back_populates="lesson")

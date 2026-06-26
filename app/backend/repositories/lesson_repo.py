@@ -3,10 +3,9 @@ from app.backend.models.lesson import (
     VocabularyCard,
     Lesson,
     FillBlankExercises,
-    UserProgress,
 )
 from sqlalchemy import select, SQLAlchemyError
-import datetime
+from sqlalchemy.orm import selectinload
 from app.backend.core.exceptions import DatabaseException, EntityNotFoundException
 
 
@@ -17,7 +16,9 @@ class LessonRepository:
     async def get_all_lessons_by_teacher(self, teacher_id: int):
         try:
             result = await self.db.execute(
-                select(Lesson).where(Lesson.teacher_id == teacher_id)
+                select(Lesson)
+                .where(Lesson.teacher_id == teacher_id)
+                .options(selectinload(Lesson.vocabulary_cards))
             )
             return result.scalars().all()
         except SQLAlchemyError as e:
@@ -32,7 +33,7 @@ class LessonRepository:
 
             return lesson
         except SQLAlchemyError as e:
-            raise DatabaseException(message=f"Ошибка удаления урока из бд текст ошибки: {str(e)}")
+            raise DatabaseException(message=f"Ошибка получения урока из бд: {str(e)}")
 
     async def create_lesson(self, teacher_id: int, title: str):
         try:
@@ -59,31 +60,36 @@ class LessonRepository:
             await self.db.rollback()
             raise DatabaseException(message=f"Ошибка удаления урока из бд текст ошибки: {str(e)}")
 
-
-
-
     async def add_vocabulary_card(self, lesson_id: int, word_fr: str, word_ru: str, emoji: str = None):
-        new_vocabulary_card = VocabularyCard(
-            lesson_id=lesson_id, word_fr=word_fr, word_ru=word_ru, emoji=emoji
-        )
+        try:
+            new_vocabulary_card = VocabularyCard(
+                lesson_id=lesson_id, word_fr=word_fr, word_ru=word_ru, emoji=emoji
+            )
 
-        self.db.add(new_vocabulary_card)
-        await self.db.commit()
-        await self.db.refresh(new_vocabulary_card)
+            self.db.add(new_vocabulary_card)
+            await self.db.commit()
+            await self.db.refresh(new_vocabulary_card)
 
-        return new_vocabulary_card
+            return new_vocabulary_card
+        except SQLAlchemyError as e:
+            await self.db.rollback()
+            raise DatabaseException(message="Ошибка при добавлении новой словарной карточки")
 
     async def add_fill_blank(self, lesson_id: int, sentence: str, translation: str, correct_answer: str, options: list,):
-        new_fill_blank = FillBlankExercises(
-            lesson_id=lesson_id,
-            sentence=sentence,
-            translation=translation,
-            correct_answer=correct_answer,
-            options=options,
-        )
+        try:
+            new_fill_blank = FillBlankExercises(
+                lesson_id=lesson_id,
+                sentence=sentence,
+                translation=translation,
+                correct_answer=correct_answer,
+                options=options,
+            )
 
-        self.db.add(new_fill_blank)
-        await self.db.commit()
-        await self.db.refresh(new_fill_blank)
+            self.db.add(new_fill_blank)
+            await self.db.commit()
+            await self.db.refresh(new_fill_blank)
 
-        return new_fill_blank
+            return new_fill_blank
+        except SQLAlchemyError as e:
+            await self.db.rollback()
+            raise DatabaseException(message = f"Ошибка при добавлении: {str(e)}")
