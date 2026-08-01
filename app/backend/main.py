@@ -8,13 +8,10 @@ from app.backend.core.dependencies import limiter
 from app.backend.api.v1.lesson import router as lesson_router
 from app.backend.core.exception_handlers import register_db_exception_handlers
 
-
-
 app = FastAPI(title="French Project API")  # app эземпляр fastapi
 register_db_exception_handlers(app)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +23,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(SlowAPIMiddleware)
+
 
 # мы импортировали auth_router из auth файла, include router, говорит взять всё что накопилось в router и в файле auth
 # prefix то что будет после домена и до /register, полный путь

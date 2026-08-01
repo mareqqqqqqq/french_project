@@ -1,16 +1,19 @@
-function StepFill({ sentences, onComplete, recordAnswer }) {
+function StepFill({ sentences, onComplete }) {
   const [picks, setPicks] = React.useState({}); // index -> option
-  const allDone = sentences.every((_, i) => picks[i]);
 
   function pick(i, opt) {
     setPicks((p) => ({ ...p, [i]: opt }));
   }
 
   function finish() {
-    sentences.forEach((s, i) => {
-      recordAnswer && recordAnswer(picks[i] === s.answer);
-    });
-    onComplete();
+    // Правильность здесь не сравнивается — фронт не знает и не должен знать correct_answer.
+    // Собираем ответы пользователя и отдаём наверх, подсчёт результата происходит на бэке
+    // в submit_fill_blank.
+    const collected = sentences.map((s, i) => ({
+      sentence_id: s.id ?? i,
+      chosen_option: picks[i] ?? null,
+    }));
+    onComplete(collected);
   }
 
   return (
@@ -32,7 +35,7 @@ function StepFill({ sentences, onComplete, recordAnswer }) {
           <window.LucideIcons.PencilLine size={15} />
           {Object.keys(picks).length} / {sentences.length} выполнено
         </div>
-        <NextButton disabled={!allDone} onClick={finish} label={allDone ? "Смотреть результат" : "Ответь на все фразы"} />
+        <NextButton onClick={finish} label="Смотреть результат" />
       </div>
     </div>
   );

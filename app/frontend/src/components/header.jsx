@@ -1,30 +1,26 @@
 // Верхний хедер: счёт, прогресс, авторизация
-function Header({ score, step, totalSteps, onAuthClick, username }) {
+function Header({ score, step, totalSteps, onAuthClick, onLogoutClick, username }) {
   const pct = ((step) / (totalSteps)) * 100;
-  const { Star, LogIn, Heart, User } = window.LucideIcons;
+  const { Star, LogIn, LogOut, Heart, User } = window.LucideIcons;
 
   return (
     <header className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-slate-200/70">
       <div className="px-10 py-5 flex items-center gap-5">
-        {/* Название урока */}
         <div className="min-w-[180px] hidden xl:block shrink-0">
           <div className="text-[11px] uppercase tracking-[0.14em] text-slate-400 font-semibold whitespace-nowrap">Текущий урок</div>
           <div className="text-[17px] font-semibold text-slate-900 whitespace-nowrap">Météo & Lieux · A1</div>
         </div>
 
-        {/* Жизни */}
         <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50/70 border border-rose-100 shrink-0">
           <Heart size={16} className="fill-[#EF4135] text-[#EF4135]" />
           <span className="text-[13px] font-semibold text-rose-600">5</span>
         </div>
 
-        {/* XP */}
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50/70 border border-amber-100 shrink-0">
           <Star size={16} className="fill-amber-400 text-amber-500" />
           <span className="text-[13px] font-semibold text-amber-700 tabular-nums whitespace-nowrap">{score} XP</span>
         </div>
 
-        {/* Прогресс-бар */}
         <div className="flex-1 min-w-[140px]">
           <div className="flex items-center justify-between mb-1.5">
             <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Прогресс</div>
@@ -42,11 +38,20 @@ function Header({ score, step, totalSteps, onAuthClick, username }) {
           </div>
         </div>
 
-        {/* Авторизация / имя пользователя */}
         {username ? (
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[13px] font-semibold shrink-0 whitespace-nowrap">
-            <User size={15} className="text-emerald-600" />
-            {username}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[13px] font-semibold whitespace-nowrap">
+              <User size={15} className="text-emerald-600" />
+              {username}
+            </div>
+            <button
+              onClick={onLogoutClick}
+              title="Выйти"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-[13px] font-semibold hover:bg-slate-50 hover:text-slate-900 transition whitespace-nowrap"
+            >
+              <LogOut size={15} />
+              Выйти
+            </button>
           </div>
         ) : (
           <button

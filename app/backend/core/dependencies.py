@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -7,18 +7,25 @@ from slowapi.util import get_remote_address
 
 from app.backend.core.security import decode_token
 from app.backend.db import get_db
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+from fastapi import Cookie
+from fastapi import Request
 
 limiter = Limiter(key_func=get_remote_address)
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    request: Request,
+    access_token: str = Cookie(default=None),
+    db: AsyncSession = Depends(get_db),
 ):
     from app.backend.models.user import User
 
-    payload = decode_token(token)
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token in cookie"
+        )
+
+    payload = decode_token(access_token)
     user_id = payload.get("sub")
 
     if not user_id:

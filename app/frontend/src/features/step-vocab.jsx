@@ -7,7 +7,7 @@ function StepVocab({ vocab, onComplete }) {
       <StepHeader
         eyebrow="Шаг 1 из 3"
         title="Словарный запас"
-        subtitle="Нажми на каждую карточку, чтобы увидеть перевод. Открой все карточки, чтобы продолжить."
+        subtitle="Нажми на карточку, чтобы увидеть перевод."
       />
 
       <div className="grid grid-cols-4 gap-4 mt-8">
@@ -27,11 +27,7 @@ function StepVocab({ vocab, onComplete }) {
           <window.LucideIcons.Eye size={15} />
           {seen} / {vocab.length} карточек открыто
         </div>
-        <NextButton
-          disabled={seen < vocab.length}
-          onClick={onComplete}
-          label={seen < vocab.length ? `Открой ещё ${vocab.length - seen}` : "Далее"}
-        />
+        <NextButton onClick={onComplete} label="Далее" />
       </div>
     </div>
   );
@@ -39,6 +35,7 @@ function StepVocab({ vocab, onComplete }) {
 
 function VocabCard({ word, index, flipped, onFlip }) {
   const Icon = window.LucideIcons[word.icon] || window.LucideIcons.Sun;
+  const hasEmoji = !!word.emoji;
   return (
     <motion.button
       initial={{ opacity: 0, y: 14 }}
@@ -56,7 +53,11 @@ function VocabCard({ word, index, flipped, onFlip }) {
       <div className={`relative w-12 h-12 rounded-2xl grid place-items-center transition-all ${
         flipped ? "bg-[#0055A4] text-white" : "bg-slate-100 text-[#0055A4]"
       }`}>
-        <Icon size={22} strokeWidth={2.2} />
+        {hasEmoji ? (
+          <span className="text-[22px] leading-none">{word.emoji}</span>
+        ) : (
+          <Icon size={22} strokeWidth={2.2} />
+        )}
       </div>
 
       <div className="relative">

@@ -41,4 +41,4 @@ async def client(db_session):  # тестовый клиент
     ) as ac:
         yield ac
 
-    app.dependecy_overrides.clear()
+    app.dependency_overrides.clear()

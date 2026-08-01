@@ -1,4 +1,4 @@
-function AuthModal({ open, onClose }) {
+function AuthModal({ open, onClose, onLoginSuccess }) {
   const [tab, setTab] = React.useState("login");
 
   const [username, setUsername] = React.useState("");
@@ -8,61 +8,59 @@ function AuthModal({ open, onClose }) {
   const { X, Mail, Lock, User, ArrowRight } = window.LucideIcons;
 
   const API_URL = "http://127.0.0.1:8000";
-  const [error, setError] = React.useState(null)
-  const [success, setSuccess] = React.useState(null)
+  const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(null);
 
-// асинронная функция async
-    const handleSubmit = async () => {
-        const userData = {
-            email: email,
-            password: password
-        };
-
-        const endpoint = tab === "login" ? "/login" : "/register";
-
-        if (tab !== "login") {
-            userData.username = username;
-        }
-
-        try {
-            const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                if (tab === "login") {
-                    // только при логине сохраняем токены и закрываем модалку
-                    localStorage.setItem("refresh_token", data.refresh_token);
-                    localStorage.setItem("access_token", data.access_token);
-                    localStorage.setItem("username", data.username);
-                    setSuccess("Вы успешно вошли!");
-                    onClose();
-                } else {
-                    // при регистрации показываем сообщение и переключаем на вкладку входа
-                    setSuccess("Аккаунт создан! Теперь войдите.");
-                    setTab("login");
-                }
-            } else {
-                let message = data.detail;
-
-                if (Array.isArray(data.detail)) {
-                    message = data.detail[0].msg;
-                }
-
-                setError(message);
-            }
-
-        } catch (error) {
-            console.error("Ошибка сети:", error);
-            setError("Не удалось связаться с сервером");
-        }
+  const handleSubmit = async () => {
+    const userData = {
+      email: email,
+      password: password,
     };
+
+    const endpoint = tab === "login" ? "/login" : "/register";
+
+    if (tab !== "login") {
+      userData.username = username;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/auth${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // ключевое — иначе cookie не примутся и не отправятся
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (tab === "login") {
+          // токены НЕ трогаем — они уже легли в httponly cookie самим браузером.
+          // в localStorage/state кладём только то, что не секрет.
+          localStorage.setItem("username", data.username);
+          setSuccess("Вы успешно вошли!");
+          if (onLoginSuccess) onLoginSuccess(data.username);
+          onClose();
+        } else {
+          setSuccess("Аккаунт создан! Теперь войдите.");
+          setTab("login");
+        }
+      } else {
+        let message = data.detail;
+
+        if (Array.isArray(data.detail)) {
+          message = data.detail[0].msg;
+        }
+
+        setError(message);
+      }
+    } catch (error) {
+      console.error("Ошибка сети:", error);
+      setError("Не удалось связаться с сервером");
+    }
+  };
 
   return (
     <window.AnimatePresence>
@@ -75,12 +73,10 @@ function AuthModal({ open, onClose }) {
           transition={{ duration: 0.25 }}
           className="fixed inset-0 z-50 grid place-items-center"
         >
-          {/* backdrop */}
           <div onClick={onClose} className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
 
-          {/* card */}
           <motion.div
-            layout //
+            layout
             key="card"
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -88,7 +84,6 @@ function AuthModal({ open, onClose }) {
             transition={{ type: "spring", stiffness: 220, damping: 24 }}
             className="relative w-[440px] rounded-[28px] bg-white/70 backdrop-blur-2xl border border-white/60 shadow-2xl overflow-hidden"
           >
-            {/* top stripe */}
             <div className="h-1 w-full flex">
               <div className="flex-1 bg-[#0055A4]"></div>
               <div className="flex-1 bg-white/40"></div>
@@ -104,7 +99,6 @@ function AuthModal({ open, onClose }) {
                 {tab === "login" ? "Продолжи обучение" : "Создай аккаунт"}
               </h3>
 
-              {/* tabs */}
               <div className="mt-6 relative grid grid-cols-2 p-1 rounded-2xl bg-slate-100/80 border border-white/80 text-[13px] font-semibold sticky top-0 z-10">
                 <motion.div
                   layout
@@ -115,7 +109,6 @@ function AuthModal({ open, onClose }) {
                 <button onClick={() => setTab("signup")} className={`relative py-2 z-10 ${tab === "signup" ? "text-slate-900" : "text-slate-500"}`}>Регистрация</button>
               </div>
 
-              {/* form — МЫ УБРАЛИ h-[105px], теперь контейнер растет сам */}
               <motion.div layout className="mt-6 space-y-3">
                 <window.AnimatePresence initial={false}>
                   {tab === "signup" && (
@@ -124,7 +117,7 @@ function AuthModal({ open, onClose }) {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      style={{ overflow: 'hidden' }}
+                      style={{ overflow: "hidden" }}
                     >
                       <Field icon={<User size={15} />} placeholder="Твоё имя" value={username} onChange={setUsername} />
                     </motion.div>
@@ -136,13 +129,13 @@ function AuthModal({ open, onClose }) {
 
               {error && (
                 <div style={{ color: "red", marginTop: "8px" }}>
-                    ❌ {error}
+                  ❌ {error}
                 </div>
               )}
 
               {success && (
                 <div style={{ color: "green", marginTop: "8px" }}>
-                    ✅ {success}
+                  ✅ {success}
                 </div>
               )}
 

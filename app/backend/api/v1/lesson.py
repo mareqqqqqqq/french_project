@@ -2,8 +2,14 @@ from fastapi import APIRouter, status, Depends, Response, Cookie, Request, HTTPE
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.db import get_db
 from app.backend.models.user import User
-from app.backend.schemas.lesson import CreateLessonSchema, CreateVocabularyCardSchema, LessonSchema, CreateFillBlankSchema
-from app.backend.core.dependencies import require_teacher
+from app.backend.schemas.lesson import (
+    CreateLessonSchema,
+    CreateVocabularyCardSchema,
+    LessonSchema,
+    CreateFillBlankSchema,
+    LessonPublicSchema,
+)
+from app.backend.core.dependencies import require_teacher, get_current_user
 
 from app.backend.services.lesson_service import LessonService
 from typing import List
@@ -23,13 +29,17 @@ async def create_lesson(
     lesson = await lesson_service.create_lesson(user_id, lesson.title)
     return lesson
 
+
 @router.post("/delete_lesson")
 async def delete_lesson(
-    lesson_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(require_teacher),
+    lesson_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_teacher),
 ):
     lesson_service = LessonService(db)
     result = await lesson_service.delete_lesson(lesson_id, current_user.id)
     return result
+
 
 @router.get("/all_lessons_by_teacher", response_model=List[LessonSchema])
 async def show_lessons(
@@ -43,12 +53,13 @@ async def show_lessons(
 
     return result
 
+
 @router.post("/add_vocabulary_card")
 async def add_vocabulary_card(
-        lesson_id: int,
-        vocabulary_card: CreateVocabularyCardSchema,
-        db: AsyncSession = Depends(get_db),
-        current_user: User = Depends(require_teacher),
+    lesson_id: int,
+    vocabulary_card: CreateVocabularyCardSchema,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_teacher),
 ):
     lesson_service = LessonService(db)
 
@@ -57,16 +68,16 @@ async def add_vocabulary_card(
         lesson_id,
         vocabulary_card.word_fr,
         vocabulary_card.word_ru,
-        vocabulary_card.emoji
+        vocabulary_card.emoji,
     )
+
 
 @router.post("/add_fill_blank")
 async def add_fill_blank(
-        fill_blank: CreateFillBlankSchema,
-        lesson_id: int,
-        db: AsyncSession = Depends(get_db),
-        current_user: User = Depends(require_teacher),
-
+    fill_blank: CreateFillBlankSchema,
+    lesson_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_teacher),
 ):
     lesson_service = LessonService(db)
 
@@ -80,6 +91,24 @@ async def add_fill_blank(
     )
 
 
+@router.get("/all_lessons", response_model=List[LessonPublicSchema])
+async def all_lessons(
+    db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    lesson_service = LessonService(db)
+    result = await lesson_service.all_lessons()
+
+    return result
 
 
-
+@router.post("/lesson/{lesson_id}/check_match")
+async def check_match(
+    lesson_id: int,
+    left_card_id: int,
+    right_card_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    lesson_service = LessonService(db)
+    left_vocabulary_card = await lesson_service.get_vocabulary_card(left_card_id)
+    right_vocabulary_card = await lesson_service.get_vocabulary_card(right_card_id)

@@ -85,15 +85,23 @@ async def login(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,  # рабоатет на http, разработка
+        secure=False,  # работает на http, разработка
         samesite="Lax",  # браузер не отправит cookie если запрос пришёл с чужого
         # домена, защита от SSRF
         max_age=60 * 60 * 24 * 7,
     )
 
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        max_age=60 * 15,
+    )
+
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
+        "message": "Успешный вход",
         "username": db_user.username,
     }
 
@@ -123,8 +131,42 @@ async def refresh(
 
     new_access_token = create_access_token({"sub": str(user.id)})
 
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        max_age=60 * 15,
+    )
+
     return {
-        "access_token": new_access_token,
-        "token_type": "bearer",
+        "message": "Токен успешно обновлён",
         "username": user.username,
     }
+
+
+@router.post("/logout")
+async def logout(
+    response: Response,
+    refresh_token: str = Cookie(default=None),
+    db: AsyncSession = Depends(get_db),
+):
+    if refresh_token:
+        result = await db.execute(
+            select(User).where(User.refresh_token == refresh_token)
+        )
+        user = result.scalars().first()
+
+        if user:
+            user.refresh_token = None
+            await db.commit()
+
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        return {"message": "Вы вышли из аккаунта"}
+
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+
+    return {"message": "Вы вышли из аккаунта"}

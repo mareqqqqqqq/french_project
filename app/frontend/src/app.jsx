@@ -1,16 +1,20 @@
 function App() {
   const [active, setActive] = React.useState("lessons");
+  const [selectedLesson, setSelectedLesson] = React.useState(null); // урок, который сейчас проходим (null = показываем список)
   const [step, setStep] = React.useState(0); // 0 vocab, 1 match, 2 fill, 3 result
   const [authOpen, setAuthOpen] = React.useState(false);
-  const [score, setScore] = React.useState(120);
-  const [streak] = React.useState(5);
+  // TODO(backend): нет ни поля xp/streak на User, ни эндпоинта, отдающего реальный прогресс —
+  // пока 0, подключим когда появится бэк-логика.
+  const [score] = React.useState(0);
+  const [streak] = React.useState(0);
   const [username, setUsername] = React.useState(localStorage.getItem("username") || "");
 
-  const [answers, setAnswers] = React.useState([]);
-  const recordAnswer = (correct) => setAnswers((a) => [...a, !!correct]);
-
   const totalSteps = 4; // includes result
-  const data = window.LESSON_DATA;
+
+  const lessonSteps = React.useMemo(
+    () => (selectedLesson ? window.adaptLessonToStepsData(selectedLesson) : null),
+    [selectedLesson]
+  );
 
   React.useEffect(() => {
     if (!authOpen) {
@@ -18,21 +22,43 @@ function App() {
     }
   }, [authOpen]);
 
-  function next() {
-    setStep((s) => Math.min(s + 1, 3));
-    if (step + 1 === 3) {
-      const correct = answers.filter(Boolean).length;
-      setScore((sc) => sc + correct * 10 + 30);
-    }
+  function selectLesson(lesson) {
+    setSelectedLesson(lesson);
+    setStep(0);
+  }
+
+  function backToLessons() {
+    setSelectedLesson(null);
+    setStep(0);
   }
 
   function restart() {
     setStep(0);
-    setAnswers([]);
   }
 
-  const correct = answers.filter(Boolean).length;
-  const total = answers.length || 1;
+  function handleLogout() {
+    fetch("http://127.0.0.1:8000/api/v1/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    }).finally(() => {
+      localStorage.removeItem("username");
+      setUsername("");
+      setActive("lessons");
+      setSelectedLesson(null);
+    });
+  }
+
+  // TODO(backend): собранные пары/ответы пока никуда не отправляются — проверка правильности
+  // и подсчёт результата появятся на бэке (lesson attempt). Фронт только передаёт данные дальше.
+  function handleMatchComplete(pairs) {
+    console.log("match pairs:", pairs);
+    setStep(2);
+  }
+
+  function handleFillComplete(answers) {
+    console.log("fill answers:", answers);
+    setStep(3);
+  }
 
   const transition = { type: "spring", stiffness: 130, damping: 22 };
 
@@ -46,22 +72,37 @@ function App() {
           step={step}
           totalSteps={totalSteps - 1}
           onAuthClick={() => setAuthOpen(true)}
+          onLogoutClick={handleLogout}
           username={username}
         />
 
-        {/* Breadcrumb шагов — скрыт в режиме учителя */}
-        {active !== "teacher" && (
+        {active !== "teacher" && selectedLesson && (
           <div className="px-10 pt-8">
             <Chapters step={step} />
           </div>
         )}
 
-        {/* Основная панель */}
         <main className="px-10 pb-16 pt-6 flex-1">
           {active === "teacher" ? (
             <window.TeacherDashboard />
+          ) : active === "progress" ? (
+            <window.ComingSoonPlaceholder title="Мой прогресс" icon="TrendingUp" />
+          ) : active === "dict" ? (
+            <window.ComingSoonPlaceholder title="Словарь" icon="Library" />
+          ) : active === "settings" ? (
+            <window.ComingSoonPlaceholder title="Настройки" icon="Settings" />
+          ) : !selectedLesson ? (
+            <window.LessonList onSelectLesson={selectLesson} />
           ) : (
             <div className="relative max-w-[1080px] mx-auto">
+              <button
+                onClick={backToLessons}
+                className="mb-6 flex items-center gap-1.5 text-[13px] font-semibold text-slate-500 hover:text-slate-800 transition"
+              >
+                <window.LucideIcons.ArrowLeft size={15} />
+                Назад к списку уроков
+              </button>
+
               <window.AnimatePresence mode="wait">
                 <motion.div
                   key={step}
@@ -70,21 +111,10 @@ function App() {
                   exit={{ opacity: 0, x: -40 }}
                   transition={transition}
                 >
-                  {step === 0 && <window.StepVocab vocab={data.vocab} onComplete={next} />}
-                  {step === 1 && (
-                    <window.StepMatch pairs={data.match} onComplete={next} recordAnswer={recordAnswer} />
-                  )}
-                  {step === 2 && (
-                    <window.StepFill sentences={data.sentences} onComplete={next} recordAnswer={recordAnswer} />
-                  )}
-                  {step === 3 && (
-                    <window.StepResult
-                      correct={correct}
-                      total={total}
-                      xp={correct * 10 + 30}
-                      onRestart={restart}
-                    />
-                  )}
+                  {step === 0 && <window.StepVocab vocab={lessonSteps.vocab} onComplete={() => setStep(1)} />}
+                  {step === 1 && <window.StepMatch pairs={lessonSteps.match} onComplete={handleMatchComplete} />}
+                  {step === 2 && <window.StepFill sentences={lessonSteps.sentences} onComplete={handleFillComplete} />}
+                  {step === 3 && <window.StepResult onRestart={restart} />}
                 </motion.div>
               </window.AnimatePresence>
             </div>
