@@ -9,12 +9,51 @@ function App() {
   const [streak] = React.useState(0);
   const [username, setUsername] = React.useState(localStorage.getItem("username") || "");
 
+  // Данные шага "Сопоставление" грузятся отдельным запросом: правильные пары намеренно
+  // не отдаются фронту, связь есть только через card id (fr) и token (ru).
+  const [matchData, setMatchData] = React.useState({ fr_items: [], ru_items: [] });
+  const [matchLoading, setMatchLoading] = React.useState(false);
+  const [matchError, setMatchError] = React.useState("");
+  const [matchReload, setMatchReload] = React.useState(0); // счётчик для кнопки "Повторить"
+
   const totalSteps = 4; // includes result
 
   const lessonSteps = React.useMemo(
     () => (selectedLesson ? window.adaptLessonToStepsData(selectedLesson) : null),
     [selectedLesson]
   );
+
+  React.useEffect(() => {
+    if (step !== 1 || !selectedLesson) return;
+
+    let cancelled = false;
+
+    (async () => {
+      setMatchLoading(true);
+      setMatchError("");
+      try {
+        const res = await window.apiFetch(
+          `http://127.0.0.1:8000/api/v1/lesson/lesson/${selectedLesson.id}/match_data`,
+          { method: "GET" }
+        );
+        if (!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+        const data = await res.json();
+        if (cancelled) return;
+        setMatchData({ fr_items: data.fr_items || [], ru_items: data.ru_items || [] });
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Не удалось загрузить match_data:", err);
+        setMatchData({ fr_items: [], ru_items: [] });
+        setMatchError("Не удалось загрузить задание — проверь соединение и попробуй ещё раз.");
+      } finally {
+        if (!cancelled) setMatchLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [step, selectedLesson, matchReload]);
 
   React.useEffect(() => {
     if (!authOpen) {
@@ -48,10 +87,10 @@ function App() {
     });
   }
 
-  // TODO(backend): собранные пары/ответы пока никуда не отправляются — проверка правильности
-  // и подсчёт результата появятся на бэке (lesson attempt). Фронт только передаёт данные дальше.
-  function handleMatchComplete(pairs) {
-    console.log("match pairs:", pairs);
+  // Пары проверяются на бэке по одной (check_match), поэтому здесь остаётся только переход
+  // дальше; solvedCount — сколько пар пользователь собрал верно.
+  function handleMatchComplete(solvedCount) {
+    console.log("match solved:", solvedCount);
     setStep(2);
   }
 
@@ -112,7 +151,17 @@ function App() {
                   transition={transition}
                 >
                   {step === 0 && <window.StepVocab vocab={lessonSteps.vocab} onComplete={() => setStep(1)} />}
-                  {step === 1 && <window.StepMatch pairs={lessonSteps.match} onComplete={handleMatchComplete} />}
+                  {step === 1 && (
+                    <window.StepMatch
+                      lessonId={selectedLesson.id}
+                      fr_items={matchData.fr_items}
+                      ru_items={matchData.ru_items}
+                      loading={matchLoading}
+                      error={matchError}
+                      onRetry={() => setMatchReload((n) => n + 1)}
+                      onComplete={handleMatchComplete}
+                    />
+                  )}
                   {step === 2 && <window.StepFill sentences={lessonSteps.sentences} onComplete={handleFillComplete} />}
                   {step === 3 && <window.StepResult onRestart={restart} />}
                 </motion.div>

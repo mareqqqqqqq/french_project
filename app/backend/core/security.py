@@ -4,9 +4,13 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 from app.backend.core.config import settings
+from cryptography.fernet import Fernet, InvalidToken
+import json
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = settings.SECRET_KEY
+MATCH_TOKEN_KEY = settings.MATCH_TOKEN_KEY
+match_fernet = Fernet(MATCH_TOKEN_KEY)
 ALGORITHMS = ["HS256"]
 
 
@@ -47,3 +51,23 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Токен истёк")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Невалидный токен")
+
+
+def create_match_token(card_id: int, lesson_id: int) -> str:
+    payload = {"card_id": card_id, "lesson_id": lesson_id}  # питоновский словарь
+
+    # текстовое представление словаря(метод dumps)
+    payload_bytes = json.dumps(payload).encode("utf-8")  # encode - превращает в байты
+    encrypted_bytes = match_fernet.encrypt(payload_bytes)  # шифрование
+    return encrypted_bytes.decode("utf-8")  # обратно в текстовую строку
+
+
+def decode_match_token(token: str) -> dict:
+    try:
+        decrypted_bytes = match_fernet.decrypt(token.encode("utf-8"))
+        # json.loads обратная операция json.dumps
+        return json.loads(decrypted_bytes.decode("utf-8"))
+    except InvalidToken:
+        raise HTTPException(status_code=400, detail="Невалидный токен")
+
+

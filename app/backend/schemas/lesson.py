@@ -82,3 +82,20 @@ class LessonPublicSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MatchFrItemSchema(BaseModel):
+    id: int
+    word: str
+
+
+class MatchRuItemSchema(BaseModel):
+    token: str
+    word: str
+
+
+class MatchDataSchema(BaseModel):
+    fr_items: List[MatchFrItemSchema]
+    ru_items: List[MatchRuItemSchema]
+
+

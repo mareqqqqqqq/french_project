@@ -99,12 +99,8 @@ function adaptLessonToStepsData(lesson) {
     hint: c.hint || "",
   }));
 
-  // TODO(backend): если на бэке появится отдельное поле match_pairs у урока — использовать его
-  // вместо производных пар из vocabulary_cards.
-  const match = lesson.match_pairs
-    ? lesson.match_pairs.map((p) => ({ fr: p.fr, ru: p.ru }))
-    : cards.map((c) => ({ fr: c.word_fr, ru: c.word_ru }));
-
+  // Пары для шага "Сопоставление" здесь больше не строятся: они приходят отдельным запросом
+  // GET /lesson/{id}/match_data (см. app.jsx), чтобы правильные ответы не попадали на фронт.
   const exercises = lesson.fill_blank_exercises || lesson.fill_blank || [];
   const sentences = exercises.map((ex, i) => ({
     id: ex.id ?? i,
@@ -113,7 +109,7 @@ function adaptLessonToStepsData(lesson) {
     options: ex.options || [],
   }));
 
-  return { vocab, match, sentences };
+  return { vocab, sentences };
 }
 
 window.LessonList = LessonList;

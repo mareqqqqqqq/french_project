@@ -8,11 +8,13 @@ from app.backend.schemas.lesson import (
     LessonSchema,
     CreateFillBlankSchema,
     LessonPublicSchema,
+    MatchDataSchema,
 )
 from app.backend.core.dependencies import require_teacher, get_current_user
 
 from app.backend.services.lesson_service import LessonService
 from typing import List
+
 
 
 router = APIRouter()
@@ -105,10 +107,23 @@ async def all_lessons(
 async def check_match(
     lesson_id: int,
     left_card_id: int,
-    right_card_id: int,
+    right_token: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
+) -> bool:
+    lesson_service = LessonService(db)
+    is_match = await lesson_service.check_match(lesson_id, left_card_id, right_token)
+
+    return is_match
+
+
+@router.get("/lesson/{lesson_id}/match_data", response_model=MatchDataSchema)
+async def match_data(
+    lesson_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     lesson_service = LessonService(db)
-    left_vocabulary_card = await lesson_service.get_vocabulary_card(left_card_id)
-    right_vocabulary_card = await lesson_service.get_vocabulary_card(right_card_id)
+    return await lesson_service.get_match_data(lesson_id)
+
+

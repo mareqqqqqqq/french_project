@@ -14,6 +14,7 @@ from app.backend.core.security import (
 )
 from app.backend.core.dependencies import limiter
 from app.backend.core.config import settings
+from typing import Optional
 
 
 # просто коллектор,
@@ -149,7 +150,7 @@ async def refresh(
 @router.post("/logout")
 async def logout(
     response: Response,
-    refresh_token: str = Cookie(default=None),
+    refresh_token: Optional[str] = Cookie(default=None),
     db: AsyncSession = Depends(get_db),
 ):
     if refresh_token:

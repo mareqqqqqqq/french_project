@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.core.exceptions import NotAuthorizedException
 from app.backend.repositories.lesson_repo import LessonRepository
+from app.backend.core.security import create_match_token, decode_match_token
 
 
 class LessonService:
@@ -64,8 +65,33 @@ class LessonService:
         lessons = await self.repo.all_lessons()
         return lessons
 
-    async def get_vocabulary_card(
-        self, card_id: int, lesson_id: int, left_card_id: int, right_card_id: int
-    ):
-        if right_card_id != left_card_id:
-            raise HTTPException()
+    async def check_match(
+        self, lesson_id: int, left_card_id: int, right_token: str
+    ) -> bool:
+        payload = decode_match_token(right_token)
+
+        if payload["lesson_id"] != lesson_id:
+            raise NotAuthorizedException(message="Токен от другого урока")
+
+        is_match = left_card_id == payload["card_id"]
+
+        card = await self.repo.get_vocabulary_card(left_card_id)
+        if card.lesson_id != lesson_id:
+            raise NotAuthorizedException("Карточка не принадлежит этому уроку")
+
+        return is_match
+
+    async def get_match_data(self, lesson_id: int):
+        lesson = await self.repo.get_lesson_by_id(lesson_id)
+
+        fr_items = [
+            {"id": card.id, "word": card.word_fr} for card in lesson.vocabulary_cards
+        ]
+
+        ru_items = [
+            {"token": create_match_token(card.id, lesson_id), "word": card.word_ru}
+            for card in lesson.vocabulary_cards
+        ]
+
+        return {"fr_items": fr_items, "ru_items": ru_items}
+

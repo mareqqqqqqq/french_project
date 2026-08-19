@@ -3,7 +3,6 @@ import os
 
 base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 env_path = os.path.join(base_dir, ".env")
-print(f"{env_path}, ищу вот тут")
 
 
 class Settings(BaseSettings):
@@ -13,6 +12,7 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     SECRET_KEY: str
+    MATCH_TOKEN_KEY: str
 
     RATE_LIMIT_REGISTER: str = "5/minute"
     RATE_LIMIT_LOGIN: str = "10/minute"
