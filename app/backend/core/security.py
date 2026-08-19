@@ -69,5 +69,3 @@ def decode_match_token(token: str) -> dict:
         return json.loads(decrypted_bytes.decode("utf-8"))
     except InvalidToken:
         raise HTTPException(status_code=400, detail="Невалидный токен")
-
-

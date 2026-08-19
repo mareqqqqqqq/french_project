@@ -16,7 +16,6 @@ from app.backend.services.lesson_service import LessonService
 from typing import List
 
 
-
 router = APIRouter()
 
 
@@ -121,9 +120,7 @@ async def check_match(
 async def match_data(
     lesson_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     lesson_service = LessonService(db)
     return await lesson_service.get_match_data(lesson_id)
-
-

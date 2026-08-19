@@ -94,4 +94,3 @@ class LessonService:
         ]
 
         return {"fr_items": fr_items, "ru_items": ru_items}
-

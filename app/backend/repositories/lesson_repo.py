@@ -30,9 +30,11 @@ class LessonRepository:
 
     async def get_lesson_by_id(self, lesson_id: int):
         try:
-            result = await self.db.execute(select(Lesson)
-                                           .where(Lesson.id == lesson_id)
-                                           .options(selectinload(Lesson.vocabulary_cards)))
+            result = await self.db.execute(
+                select(Lesson)
+                .where(Lesson.id == lesson_id)
+                .options(selectinload(Lesson.vocabulary_cards))
+            )
             lesson = result.scalar_one_or_none()
             if lesson is None:
                 raise EntityNotFoundException(message=f"Ошибка: урок не найден в бд")
@@ -139,4 +141,3 @@ class LessonRepository:
 
         except SQLAlchemyError as e:
             raise DatabaseException()
-

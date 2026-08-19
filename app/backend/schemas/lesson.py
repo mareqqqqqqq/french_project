@@ -97,5 +97,3 @@ class MatchRuItemSchema(BaseModel):
 class MatchDataSchema(BaseModel):
     fr_items: List[MatchFrItemSchema]
     ru_items: List[MatchRuItemSchema]
-
-
